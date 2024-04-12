@@ -55,7 +55,7 @@ app.use(methodOverride('_method'))
 
 
 
-//connect to DB
+//connect to sqlite3 DB
 const db = new sqlite3.Database('./database.db', sqlite3.OPEN_READWRITE, (err)=>{
     if (err) return console.error(err.message)
 })
@@ -66,16 +66,15 @@ const Request_Form_Module = require('./RequestFormModule')
 const Dashboard_Modole = require('./DashboardModule')
 
 const exp = require('constants')
+const { userInfo } = require('os')
 var request_form_module = new Request_Form_Module()
 var dashboard_module = new Dashboard_Modole()
 
 
-// app.use('/form', express.static(clientApp + '/request_form.html'))
 app.use('/+', express.static(clientApp + '/index.html'))
 app.use('/app.js', express.static(clientApp + '/app.js'))
 app.use('/dashboard', checkAuthenticated, express.static(clientApp + '/dashboard.html'))
-app.use('/superdashboard', express.static(clientApp + '/supervisor_dashboard.html'))
-
+app.use('/supervisor_dashboard', checkAuthenticated, checkSupervisorRole, express.static(clientApp + '/supervisor_dashboard.html'))
 
 app.get('/login', checkNotAuthenticated, (req, res) => {
     res.render('login.ejs')
@@ -120,6 +119,7 @@ app.get('/register', (req, res) => {
 })
 
 // Registration Page
+// This is only enabled in the supervisor's mode
 app.post('/register', async (req, res) => {
     try {
         const hashedPassword = await bcrypt.hash(req.body.password, 10)
@@ -138,7 +138,6 @@ app.post('/register', async (req, res) => {
             }else {
                 return res.redirect('/register?registered=true');
             }
-            // res.redirect('/login?registered=true');
             
         });
         
@@ -147,10 +146,10 @@ app.post('/register', async (req, res) => {
     }
   })
 
-  app.get('/change-password', checkAuthenticated, (req, res) => {
+app.get('/change-password', checkAuthenticated, (req, res) => {
     console.log('get: ', req.user)
     res.render('change-password.ejs', { user: req.user, error: req.query.error });
-  });
+});
 
   app.post('/change-password', checkAuthenticated, async (req, res) => {
     console.log('post: ', req.body)
@@ -176,8 +175,7 @@ app.post('/register', async (req, res) => {
     }
   });
 
-  app.post('/change-status')
-
+  // Switch the status of the staff: this enable the supervisor to disable/enable a staff
   app.patch('/change-status/:id/status', async (req, res) => {
     const { id } = req.params;
     const { status } = req.body; // Expected to be either true or false
@@ -211,6 +209,7 @@ app.post('/register', async (req, res) => {
         });
     });
 }
+
 /**
  * Updates the password for a user identified by email.
  * @param {string} email The email of the user whose password is to be updated.
@@ -354,6 +353,7 @@ app.put('/process_ticket/:id', (req, res) => {
 });
 
 
+// Retrieve the invoice of the ticket
 app.get('/request/invoice/:id', (req, res) => {
     const id = req.params.id;
 
@@ -375,9 +375,10 @@ app.get('/request/invoice/:id', (req, res) => {
     });
 });
 
+// Retrieve the general report of the ticket
 app.get('/request/general_report/', (req, res) => {
     const sql = `
-        SELECT r.id, r.supervisor_name, r.speed_chart, r.service_type, r.staff, r.note, rp.rate, rp.hours, rp.parts_and_costs
+        SELECT r.id, r.supervisor_name, r.speed_chart, r.service_type, r.staff, r.note, r.status, rp.rate, rp.hours, rp.parts_and_costs
         FROM requests r
         JOIN requests_processed rp ON r.id = rp.id
     `;
@@ -411,6 +412,7 @@ app.get('/request/general_report/', (req, res) => {
 
             return {
                 id: row.id,
+                status: row.status,
                 supervisor_name: row.supervisor_name,
                 speed_chart: row.speed_chart,
                 service_type: row.service_type,
@@ -440,13 +442,14 @@ app.get('/form/retrieve/id/:id', (req, res) => {
 })
 
 
+// Retrieve the requests under a specific service_type, start_time, and end_time
 app.get('/requests/condition', (req, res) => {
     const { service_type, start_time, end_time } = req.query;
     
     // Construct the SQL query
     const sql = `
         SELECT * FROM requests 
-        WHERE service_type = ? AND status = 'complete' 
+        WHERE LOWER(service_type) = LOWER(?) AND status = 'complete' 
         AND close_time BETWEEN CAST(? AS INTEGER) AND CAST(? AS INTEGER)
 
     `;
@@ -476,6 +479,8 @@ app.get('/form/retrieve/name/:name', (req, res) => {
     })
 })
 
+// Check if the generated ticket id is already in the database
+// This is used while generating an id of the new ticket
 app.get('/ticket/checkId', async (req, res) => {
   const id = req.query.id;
   if (!id) {
@@ -792,6 +797,7 @@ app.post('/reassign/:id/:ticket_id', (req, res) => {
 
 
 // ------------ middleware -------------------
+// Check if the user is loged in
 function checkAuthenticated(req, res, next) {
     if (req.isAuthenticated()) {
       return next()
@@ -800,14 +806,23 @@ function checkAuthenticated(req, res, next) {
     res.redirect('/login')
   }
   
-  function checkNotAuthenticated(req, res, next) {
-    if (req.isAuthenticated()) {
-      return res.redirect('/dashboard')
-    }
+function checkNotAuthenticated(req, res, next) {
+if (req.isAuthenticated()) {
+    return res.redirect('/dashboard')
+}
     next()
-  }
+}
 
-
+// Extra protection to the supervisor mode
+function checkSupervisorRole(req, res, next) {
+    // Assuming the user's role is stored in req.user.role
+    if (req.user && req.user.role === 'supervisor') {
+        return next();
+    } else {
+        // Optionally, redirect to a "not authorized" page or send an error
+        return res.status(403).send('Access denied');
+    }
+}
 
 
 
