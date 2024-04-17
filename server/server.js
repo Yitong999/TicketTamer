@@ -379,7 +379,7 @@ app.get('/request/invoice/:id', (req, res) => {
     });
 });
 
-// Retrieve the general report of the ticket
+// Retrieve the general report of all the ticket
 app.get('/request/general_report/', (req, res) => {
     const sql = `
         SELECT r.id, r.supervisor_name, r.speed_chart, r.service_type, r.staff, r.note, r.status, rp.rate, rp.hours, rp.parts_and_costs
@@ -630,6 +630,7 @@ app.get('/tickets/note/:ticket_id', (req, res) => {
     })
 })
 
+// Retrieve ticket chat
 app.get('/tickets/chat/:ticket_id', (req, res) => {
     const id = req.params.ticket_id
 
@@ -650,6 +651,7 @@ app.get('/tickets/chat/:ticket_id', (req, res) => {
     });
 })
 
+// Update the Ticket Chat
 app.put('/tickets/chat/update/:ticket_id', (req, res) => {
     const id = req.params.ticket_id;
     const { chat } = req.body; // Assuming the new chat content is sent in the request body

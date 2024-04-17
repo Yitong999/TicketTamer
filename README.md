@@ -30,6 +30,10 @@
 }
 ```
 
+## GET: Logout
+**URL:** `http://localhost:3000//logout`
+
+
 ## GET: Check If Generated Ticket ID Existing in Database Already
 **URL:** `http://localhost:3000/ticket/checkId?id=`
 
@@ -82,8 +86,8 @@ or
 ```
 
 
-## GET: Retrieve All Opening Tickets within a Specific Shop
-**URL:** `http://localhost:3000/tickets/shop/it`
+## GET: Retrive All Open Tickets within the Shop @shop_name
+**URL:** `http://localhost:3000/tickets/shop/:shop_name`
 
 **Sample Output:**
 ```json
@@ -122,6 +126,13 @@ or
 ## POST: Reopen a closed ticket
 **URL:** `http://localhost:3000/reopen/:ticket_id`
 
+## GET: Retrieve the Ticket Chat
+**URL:** `http://localhost:3000/tickets/chat/:ticket_id`
+
+**Sample Body:**
+```json
+{"chat":"T is editing this. (from t 4/12/2024, 10:03:40 AM) (from t 4/12/2024, 10:04:20 AM)\nT1 edit. (from t1 4/12/2024, 10:06:54 AM) (from t 4/12/2024, 10:08:07 AM)"}
+```
 
 ## PUT: Update the Ticket Chat
 **URL:** `http://localhost:3000/tickets/chat/update/:ticket_id`
@@ -214,3 +225,67 @@ or
 [{"id":1,"name":"t","email":"t@t","role":"staff","shop":"IT","password":"$2b$10$d5BaXhg5QHKFxTnGXqbXG.KS/QZo64Ou3A7zs47bJiTSlhbiMYjGu","in_progress_tickets":"[{\"pickup_time\":1712946715074,\"ticket_id\":\"71814\"},{\"pickup_time\":1712942007720,\"ticket_id\":\"85711\"}]","completed_tickets":"[{\"pickup_time\":1712941322462,\"complete_time\":1712941688469,\"ticket_id\":\"13263\"},{\"pickup_time\":1712945401241,\"complete_time\":1712945562049,\"ticket_id\":\"31153\"}]","status":1},{"id":2,"name":"t1","email":"t1@t","role":"supervisor","shop":"IT","password":"$2b$10$5ejpxXDGD3NLoWblrLLP8.7J7Am7zf0IJHgufabXHF2ewcX.UrBwq","in_progress_tickets":"[{\"pickup_time\":1712942007720,\"ticket_id\":\"85711\"}]","completed_tickets":"[{\"pickup_time\":1712941322462,\"complete_time\":1712941688469,\"ticket_id\":\"13263\"},{\"pickup_time\":1712945401241,\"complete_time\":1712945562049,\"ticket_id\":\"31153\"}]","status":1},{"id":3,"name":"new","email":"n@n","role":"staff","shop":"Chemistry","password":"$2b$10$HU2eoCQKJwIsnGjn.QbZA.hJ/OtDEuj5bDnEMqTFKZtwolsPE5mb6","in_progress_tickets":"[]","completed_tickets":"[]","status":0}]
 ```
 
+## GET: Retrieve All Inprogress Tickets under Staff @id, with no limitation of time or any other conditions
+**URL:** `http://localhost:3000/tickets/myinprogress/:id`
+
+**Sample Output:**
+```json
+{"in_progress_tickets":"[{\"pickup_time\":1712946715074,\"ticket_id\":\"71814\"},{\"pickup_time\":1712942007720,\"ticket_id\":\"85711\"}]"}
+```
+
+
+## GET: Track staff @id 's completed tickets within a time range
+**URL:** `http://localhost:3000/completed/staff/:id`
+
+**Sample Output:**
+```json
+{"completed_tickets":"[{\"pickup_time\":1712941322462,\"complete_time\":1712941688469,\"ticket_id\":\"13263\"},{\"pickup_time\":1712945401241,\"complete_time\":1712945562049,\"ticket_id\":\"31153\"}]"}
+```
+
+
+## GET: Retrieve All Completed Tickets under Staff @id, with no limitation of time or any other conditions
+**URL:** `http://localhost:3000/tickets/mycompleted/:id`
+
+**Sample Output:**
+```json
+{"completed_tickets":"[{\"pickup_time\":1712941322462,\"complete_time\":1712941688469,\"ticket_id\":\"13263\"},{\"pickup_time\":1712945401241,\"complete_time\":1712945562049,\"ticket_id\":\"31153\"}]"}
+```
+
+
+## GET: Retrieve All Tickets Submitted by Customer @name
+**URL:** `http://localhost:3000/form/retrieve/name/:name`
+
+**Sample Output:**
+```json
+[{"id":85712,"customer_name":"TEST0","office_num":"D315","email":"TEST@mail.com","phone_num":"1112223333","speed_chart":"TEST","supervisor_name":"TESTNAME","service_type":"TEST","request_description":"TEST","manufacturer":"lenovo","status":"open","open_time":1713383059110,"close_time":0,"note":null,"staff":null,"pickup_time":0,"time":0,"chat":null},{"id":85713,"customer_name":"TEST0","office_num":"D315","email":"TEST@mail.com","phone_num":"1112223333","speed_chart":"TEST","supervisor_name":"TESTNAME","service_type":"IT","request_description":"TEST","manufacturer":"lenovo","status":"open","open_time":1713386984870,"close_time":0,"note":null,"staff":null,"pickup_time":0,"time":0,"chat":null},{"id":85714,"customer_name":"TEST0","office_num":"D315","email":"TEST@mail.com","phone_num":"1112223333","speed_chart":"TEST","supervisor_name":"TESTNAME","service_type":"it","request_description":"TEST","manufacturer":"lenovo","status":"open","open_time":1713386998242,"close_time":0,"note":null,"staff":null,"pickup_time":0,"time":0,"chat":null}]
+```
+
+## GET: Retrieve All the Tickets under a specific service_type, start_time, and end_time
+**URL:** `http://localhost:3000/requests/condition`
+
+**Sample Body::**
+```json
+{
+    "service_type": "it", 
+    "start_time": 1712941322462, 
+    "end_time": 1812941322462
+
+}
+```
+
+## GET: Retrieve the General Report of All the Ticket
+**URL:** `http://localhost:3000/request/general_report/`
+
+**Sample Output::**
+```json
+{"message":"success","data":[{"id":13263,"status":"complete","supervisor_name":"Mohamad","speed_chart":"mhmd","service_type":"it","staff":"[\"1\",\"2\"]","note":"The ticket is done.","price":300},{"id":31153,"status":"complete","supervisor_name":"Mohamad","speed_chart":"mhmd","service_type":"it","staff":"[\"1\",\"2\"]","note":"The ticket is done","price":300},{"id":71814,"status":"inprogress","supervisor_name":"1","speed_chart":"1","service_type":"glass","staff":"[\"1\"]","note":null,"price":0},{"id":85711,"status":"inprogress","supervisor_name":"Mohamad","speed_chart":"mhmd","service_type":"it","staff":"[\"1\",\"2\"]","note":null,"price":800}]}
+```
+
+
+## GET: Retrieve the Invoice of the Ticket @ticket_id
+**URL:** `http://localhost:3000/request/invoice/:ticket_id`
+
+**Sample Output::**
+```json
+{"ticket":{"id":31153,"service_type":"it","supervisor_name":"Mohamad","speed_chart":"mhmd","hours":20,"rate":5,"parts_and_costs":"[{\"part\":\"part 2\",\"partQuantity\":10,\"partPrice\":20}]"}}
+```
