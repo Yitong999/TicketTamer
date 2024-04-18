@@ -3,6 +3,9 @@
 ## Our project:
 We collaborated with the UBC Chemistry Department, under the guidance of Mohamad and David, to create a specialized website that efficiently manages maintenance tickets within the department. This platform empowers regular users to submit maintenance requests effortlessly. It also allows staff members to collaboratively address and resolve these tickets. Additionally, the website features a supervisor mode, which provides tools for performance analysis and team management, ensuring a streamlined and effective maintenance process.
 
+![Main Site when user meet a probelm](readme_supplement/main_site-ezgif.com-video-to-gif-converter.gif)
+![Staff Login](readme_supplement/login.gif)
+
 ## PROBLEMS ON EXISTING SOLUTIONS:
 
 **Email Oriented:** customers submit maintenance requests via  printed paper forms available in each shop. The tickets are manually generated and then manually distributed among four shops. Subsequently, each ticket is individually assigned to a maintenance staff member. Once the maintenance staff member completes the ticket, they are required to send an email to the customer to provide a status update and fill an excel form and submit the labor hours and parts costs.
@@ -36,21 +39,21 @@ Before you begin, ensure you have Node.js installed on your machine. You can dow
 
 2. **Install Dependencies** 
 Navigate to the project directory and run the following command to install all necessary dependencies:
-```bash
+    ```bash
     npm install
-```
+    ```
 
 3. **Environment Variables**
 Create a .env file in the root directory of your project and add the necessary environment variables:
-```
-SECRET_KEY=your_secret_key
-```
+    ```
+    SECRET_KEY=your_secret_key
+    ```
 
 4. **Running the Application**
 To run the server in production mode, start it using:
-```bash
-node server.js
-```
+    ```bash
+    node server.js
+    ```
 
 ## Demo feedback and future TODOs:
 
