@@ -27,51 +27,6 @@ Service = {
         }
     },
 
-    // postData: async function (url = '', data = {}) {
-    //     // Default options are marked with *
-    //     const response = await fetch(url, {
-    //         method: 'POST', // *GET, POST, PUT, DELETE, etc.
-    //         mode: 'cors', // no-cors, *cors, same-origin
-    //         cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-    //         credentials: 'same-origin', // include, *same-origin, omit
-    //         headers: {
-    //             'Content-Type': 'application/json'
-    //             // 'Content-Type': 'application/x-www-form-urlencoded',
-    //         },
-    //         redirect: 'follow', // manual, *follow, error
-    //         referrerPolicy: 'no-referrer', // no-referrer, *client
-    //         body: JSON.stringify(data) // body data type must match "Content-Type" header
-    //         // body: data
-    //     });
-    //     const contentType = response.headers.get("content-type");
-    //     if (contentType && contentType.includes("application/json")) {
-    //         return response.json(); // Parses JSON response
-    //     } else {
-    //         return response.text(); // Returns text response
-    //     }
-    // },
-
-    // putData: async function (url = '', data = {}) {
-    //     const response = await fetch(url, {
-    //         method: 'PUT', // Change method to PUT
-    //         mode: 'cors',
-    //         cache: 'no-cache',
-    //         credentials: 'same-origin',
-    //         headers: {
-    //             'Content-Type': 'application/json'
-    //         },
-    //         redirect: 'follow',
-    //         referrerPolicy: 'no-referrer',
-    //         body: JSON.stringify(data)
-    //     });
-    //     const contentType = response.headers.get("content-type");
-    //     if (contentType && contentType.includes("application/json")) {
-    //         return response.json(); // Parses JSON response
-    //     } else {
-    //         return response.text(); // Returns text response
-    //     }
-    // },
-
     postData: async function (url = '', data = {}) {
         // Default options are marked with *
         const response = await fetch(url, {
@@ -204,6 +159,7 @@ const formHTML = `
     </form>
 `
 
+// Processed Ticket Block - corresponding to requests_processed database
 const processedTicketHTML = `
     <div>
 
@@ -258,6 +214,7 @@ const processedTicketHTML = `
     </div>
 `
 
+// A summary to the ticket
 const summaryTicketHTML = `
     <form>
 
@@ -276,7 +233,6 @@ const summaryTicketHTML = `
             </tr>
     </form>
 `
-
 
 
 // Pick up button
@@ -303,6 +259,7 @@ const formSaveButtonHTML =
 </div>
 `
 
+// Drop Menu List Kit
 const dropBar = `
 <div>
     <label for="nameSelect">Name:</label>
@@ -315,7 +272,7 @@ const dropBar = `
 </div>
 `
 
-
+// Ticket Reassign Button
 const formReassignButtonHTML = 
 `
 <button type="button" id="form-reassign-button">Share</button>
@@ -328,26 +285,6 @@ class FAQView{
 
         this.classifications = []
         this.faq = []
-        // this.faqs = [
-        //     {
-        //         "Q_id": 1,
-        //         "classification": "IT",
-        //         "question": "How to factory reset win10 OS?",
-        //         "solution": "To reset your PC, go to Start"
-        //     },
-        //     {
-        //         "Q_id": 2,
-        //         "classification": "IT",
-        //         "question": "How to install linux ?",
-        //         "solution": "Windows Subsystem for Linux (WSL), Bare metal Linux; or create a Virtual Machine (VM) to run Linux locally or in the cloud."
-        //     },
-        //     {
-        //         "Q_id": 3,
-        //         "classification": "CHEM",
-        //         "question": "How to install linux ?",
-        //         "solution": "Windows Subsystem for Linux (WSL), Bare metal Linux; or create a Virtual Machine (VM) to run Linux locally or in the cloud."
-        //     }
-        // ]
     }
 
     // Fetch classifications from the /get-all-faqs API
@@ -366,6 +303,7 @@ class FAQView{
         }
     }
     
+    // Set up fields for adding a new FAQ
     setAddFAQPrompt(){
         emptyDOM(this.content_elem);
     
@@ -466,7 +404,7 @@ class FAQView{
         };
     }
     
-
+    // Helper function to add a faq
     async addFaq(faq){
         let url = origin + '/add-faq';
         try {
@@ -478,6 +416,7 @@ class FAQView{
 
     }
 
+    // Render FAQs such that faqs with same class are grouped together
     async setContent(){
         let url = origin + '/get-all-faqs'
         const response = await fetch(url)
@@ -495,9 +434,6 @@ class FAQView{
         )
 
         this.content_elem.appendChild(prompt_dom)
-
-        // Clear the content element first
-        // this.content_elem.innerHTML = '';
         
         // Group faqs by classification
         const faqsByClassification = faqs.reduce((acc, faq) => {
@@ -563,6 +499,7 @@ class UserView{
         this.title = document.querySelector('h1')
     }
 
+    // Set up the welcome page. Eg/ Hi, Thomas
     setName(){
         console.log(this.user)
         
@@ -574,6 +511,7 @@ class UserView{
         }
     }
 
+    // Display an extra button to go to supervisor site, if the staff is a supervisor
     addSupervisorButton() {
         let button = document.createElement("button");
         button.textContent = "Supervisor Dashboard";
