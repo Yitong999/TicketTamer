@@ -883,6 +883,50 @@ class TrackFormView{
         this.content_elem.querySelector('input[name="manufacturer"]').value = ticket.manufacturer
 
 
+        // Create and append download button
+        var downloadButton = document.createElement('button');
+        downloadButton.textContent = 'Download File';
+        downloadButton.onclick = () => {
+            
+            let url = origin + '/download'
+            const data = {
+                'file_name': ticket.file_path
+            }
+
+
+            console.log('file path: ', ticket.file_path)
+            if (ticket.file_path == null){
+                window.alert('no file attached!')
+            } else {
+                fetch(url, {
+                    method: 'POST', // This is typically not recommended
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data) // Non-standard use of GET
+                })
+                .then(response => response.blob()) // Assuming you are expecting a file to download
+                .then(blob => {
+                    // Create a URL for the blob object
+                    const url = window.URL.createObjectURL(blob);
+                    // Create a link and set the URL as the href
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = data.file_name.split('/').pop(); // Suggesting file name
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                })
+
+            }
+
+            
+
+        };
+        this.content_elem.appendChild(downloadButton);
+
+
+
         if (isPicked == true){ // The ticket is picked, render processed info
             this.content_elem.appendChild(createDOM(processedTicketHTML))
             const table = this.content_elem.querySelector('#processed_table tbody');
@@ -903,8 +947,23 @@ class TrackFormView{
                     table.querySelector('input[name="rate"]').value = null
                     table.querySelector('select[name="research-or-teach"]').value = null
                     table.querySelector('select[name="new-or-maintenance"]').value = null
-                    
+
+                    console.log('@@@@@@@@@@@')
+                    table.appendChild(
+                        createDOM(
+                            `
+                            
+                            <tr>
+                                <td>Part Description</td>
+                                <td>Quantity</td>
+                                <td>Unit Price</td>
+                            </tr>
+                            `
+                        )
+                    )
                 } else if (processed_response.status == 200){
+
+                    console.log('$$$$$$$$$$')
                     const processed_ticket = await processed_response.json()
 
                     console.log(processed_ticket)
@@ -912,7 +971,18 @@ class TrackFormView{
                     var parts_and_costs = JSON.parse(processed_ticket.parts_and_costs)
 
                     var research_or_teach = processed_ticket.research_or_teach
-                    console.log(research_or_teach)
+
+                    table.appendChild(
+                        createDOM(
+                            `
+                            <tr>
+                                <td>Part Description</td>
+                                <td>Quantity</td>
+                                <td>Unit Price</td>
+                            </tr>
+                            `
+                        )
+                    )
 
                     table.querySelector('select[name="client-type"]').value = processed_ticket.client_type
                     table.querySelector('input[name="number-hours"]').value = processed_ticket.hours
@@ -925,19 +995,20 @@ class TrackFormView{
 
 
                     let num_of_parts = parts_and_costs.length
+                    
+                    console.log('table 988: ', table)
 
-                    table.append(
-                        createDOM(
-                            `
-                            
-                            <tr>
-                                <td>Part Description</td>
-                                <td>Quantity</td>
-                                <td>Unit Price</td>
-                            </tr>
-                            `
-                        )
-                    )
+                    // table.appendChild(
+                    //     createDOM(
+                    //         `
+                    //         <tr>
+                    //             <td>Part Description</td>
+                    //             <td>Quantity</td>
+                    //             <td>Unit Price</td>
+                    //         </tr>
+                    //         `
+                    //     )
+                    // )
                     
                     for (let i = 0; i < num_of_parts; i++){
 

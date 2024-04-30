@@ -2,33 +2,35 @@
 var Service = {
     origin: window.location.origin,
 
-    createForm: function(form){
-        var xhrRequest = new XMLHttpRequest()
-        return new Promise((resolve, reject) => {
-            url = this.origin + '/form/submit'
+    // createForm: function(formData){
+    //     var xhrRequest = new XMLHttpRequest()
+    //     return new Promise((resolve, reject) => {
+    //         url = this.origin + '/form/submit'
 
-            xhrRequest.open('POST', url);
-            xhrRequest.setRequestHeader('Content-Type', 'application/json')
-            xhrRequest.onload = function(){
-                if (xhrRequest.status == 200){
-                    resolve(xhrRequest.response)
-                }else{
-                    reject(new Error(xhrRequest.responseText))
-                }
-            }
-            xhrRequest.ontimeout = function() {
-                reject((new Error(xhrRequest.status)))
-            }
-            xhrRequest.onerror = function() {
-                reject((new Error(xhrRequest.status)))
-            };
-            xhrRequest.send(JSON.stringify(form))
-            xhrRequest.timeout = 500;
+    //         xhrRequest.open('POST', url);
+    //         xhrRequest.setRequestHeader('Content-Type', 'application/json')
+    //         xhrRequest.onload = function(){
+    //             if (xhrRequest.status == 200){
+    //                 resolve(xhrRequest.response)
+    //             }else{
+    //                 reject(new Error(xhrRequest.responseText))
+    //             }
+    //         }
+    //         xhrRequest.ontimeout = function() {
+    //             reject((new Error(xhrRequest.status)))
+    //         }
+    //         xhrRequest.onerror = function() {
+    //             reject((new Error(xhrRequest.status)))
+    //         };
+    //         // xhrRequest.send(JSON.stringify(formData))
+
+    //         console.log('formData: ', formData)
+
+    //         xhrRequest.send(formData)
+    //         xhrRequest.timeout = 500;
                 
-        })
-    },
-
-
+    //     })
+    // }
 
 }
 
@@ -253,6 +255,12 @@ class TrackFormView{
                 }
                
             });
+
+        this.content_elem.appendChild(createDOM(
+            `
+            <input type="file" name="file" id="fileInput">
+            `
+        ))
     }
 
     displayFilled(id){
@@ -356,63 +364,43 @@ class TrackFormView{
             console.log("service_type:", this.service_type)
             console.log("request_description:", this.work_request)
             console.log("manufacturer:", this.manufacturer)
-
+            console.log('file: ', document.getElementById('fileInput'))
             // Pass all error checkers
             if (this.errorCheck()){
-                var form = {
-                    "id": uniqueId,
-                    "customer_name": this.customer_name,
-                    "office_num": this.office_num,
-                    "email": this.email,
-                    "phone_num": this.phone_num,
-                    "speed_chart": this.speed_chart,
-                    "supervisor_name": this.supervisor_name,
-                    "service_type": this.service_type,
-                    "request_description": this.request_description,
-                    "manufacturer": this.manufacturer,
-                }
+                const formData = new FormData()
+                formData.append('customer_name', this.customer_name)
+                formData.append('office_num', this.office_num)
 
+                formData.append("email", this.email)
+                formData.append("phone_num", this.phone_num)
+                formData.append("speed_chart", this.speed_chart)
+                formData.append("supervisor_name", this.supervisor_name)
+                formData.append("service_type", this.service_type)
+                formData.append("request_description", this.request_description)
+                formData.append("manufacturer", this.manufacturer)
+
+                formData.append('file', document.getElementById('fileInput').files[0])
+
+                console.log('formData: ', formData)
                 if (instruction == 'submit'){
-                    Service.createForm(form).then(
-                        (resolve) => {
-                            console.log(resolve)
-                            
-                            function showSuccessMessage() {
-                                // You can customize this part as per your UI requirements
-                                window.alert("You have successfully submitted the ticket. Please click the print button to print the page! ")
-                                
-                                let successMessage = document.createElement("div");
-                                console.log('unique ID: ', uniqueId)
-                                successMessage.innerHTML = `<strong style='color:green;' >Ticket #${uniqueId} is submitted successfully! Please print the page for reference. We will email you once the ticket is solved or we need further information. Thanks.</strong>`;
-                                
-                                
-                                // <br><button onclick='printPage()'>Print this page</button>";
-                                document.body.appendChild(successMessage);
-                            }
+                    //  Submit a ticket request 
 
-                            function addPrintOption() {
-                                let printButton = document.createElement("button");
-                                printButton.innerHTML = "Print";
-                                printButton.className = "btn btn-success";
-                                printButton.onclick = function() {
-                                    window.print();
-                                };
-                                document.body.appendChild(printButton);
-                            }
-                            
-                            emptyDOM(this.control_elem)
+                    let url = origin + '/form/submit';
 
-                            // Pop successful submit window
-                            showSuccessMessage();
-
-                            // Add print option
-                            addPrintOption();
-
-                        },
-                        (err) => {
-                            console.log(err)
+                    try {
+                        const response = await fetch(url, {
+                            method: 'POST',
+                            body: formData,  // Assuming formData is already defined as an instance of FormData
+                        });
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
                         }
-                    )
+                        
+                        console.log('Success:', response);
+                    } catch (error) {
+                        console.error('Error:', error);
+                    }
+
                 }                 
             }
         })

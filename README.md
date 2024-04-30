@@ -55,20 +55,21 @@ To run the server in production mode, start it using:
     node server.js
     ```
 
-## Demo feedback and future TODOs:
+## TODO: Demo feedback and future TODOs:
 
 ### User
 
-1. Submit the ticket, attach a file (can be png, jpg, word, pdf … )
+1. ~~Submit the ticket, attach a file (can be png, jpg, word, pdf … )~~
 2. Users are optional to put in a list of things they bring.
 
 ### Staff
 
-1. Fix adding part bug.
-2. Add parts connect with full database (**or copy and paste from excel?**) - hold off
-3. Make hours field separately from all shared working staff.
-4. Split hours into billable **hours** and **non-billable hours**.
-5. When reopen the ticket, a window is popped out for **New Ticket** or **Edit old ticket (in case mistakenly close the ticket).** If this is a new ticket, link to previous one in note, say like ‘it follows up with previous one…’)
+1. ~~Fix adding part bug.~~
+2. ~~Download the attached file~~
+3. Add parts connect with full database (**or copy and paste from excel?**) - hold off
+4. Make hours field separately from all shared working staff.
+5. Split hours into billable **hours** and **non-billable hours**.
+6. When reopen the ticket, a window is popped out for **New Ticket** or **Edit old ticket (in case mistakenly close the ticket).** If this is a new ticket, link to previous one in note, say like ‘it follows up with previous one…’)
 
 ### Supervisor:
 
@@ -172,6 +173,14 @@ or
 [{"id":85714,"customer_name":"TEST0","office_num":"D315","email":"TEST@mail.com","phone_num":"1112223333","speed_chart":"TEST","supervisor_name":"TESTNAME","service_type":"it","request_description":"TEST","manufacturer":"lenovo","status":"open","open_time":1713386998242,"close_time":0,"note":null,"staff":null,"pickup_time":0,"time":0,"chat":null}, ...]
 ```
 
+## POST: Download an ticket's attached file
+**URL:** `http://localhost:3000/download`
+**Sample Body:**
+```json
+{
+    "file_name": "uploads/login.gif"
+}
+```
 
 ## POST: Staff @id pick up an ticket with @ticket_id
 **URL:** `http://localhost:3000/pickup/:id/:ticket_id`

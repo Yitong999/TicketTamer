@@ -7,6 +7,20 @@ const sqlite3 = require('sqlite3').verbose()
 const port = 3000;
 const path = require('path')
 const passport = require('passport')
+const multer = require('multer')
+const axios = require('axios');
+
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'uploads/'); // Changed destination path
+    },
+    filename: function (req, file, cb) {
+        cb(null, file.originalname);
+    }
+})
+
+const upload = multer({ storage: storage })
+
 const methodOverride = require('method-override')
 
 app.use(express.json()) 						// to parse application/json
@@ -249,18 +263,21 @@ app.get('/logout', (req, res, next) => {
 })
 
 // Submit a request
-app.post('/form/submit', (req, res) => {
+app.post('/form/submit', upload.single('file'), (req, res) => {
     var input = req.body
-    console.log('input: ', input)
+    // console.log('input: ', input)
 
+    var path = req.file.path
+    console.log('file: ', path)
     request_form_module.create_request(db, input.customer_name, input.office_num, input.email, input.phone_num, input.speed_chart,
-                                            input.supervisor_name, input.service_type, input.request_description, input.manufacturer, input.id)
+                                            input.supervisor_name, input.service_type, input.request_description, input.manufacturer, input.id, path)
     .then((message) => {
         res.status(200).send(message)
     }).catch((message) => {
         console.log(message)
         res.status(400).send(message)
     })
+
 })
 
 // Change and update a request
@@ -795,7 +812,24 @@ app.post('/reassign/:id/:ticket_id', (req, res) => {
 
 
 
+// Staff download the attached file
+app.post('/download', (req, res) => {
+    const file_name = req.body.file_name
 
+    console.log('file_name: ', file_name)
+
+    const filePath = path.join(__dirname, file_name);
+    const file = path.basename(filePath); // Get filename to set as download name
+
+    // Set the headers to prompt download with the original file name
+    res.download(filePath, file, (err) => {
+        if (err) {
+            // Handle error, but don't expose to the client
+            console.error("Error downloading file:", err);
+            res.status(500).send("Error downloading file.");
+        }
+    });
+});
 
 
 

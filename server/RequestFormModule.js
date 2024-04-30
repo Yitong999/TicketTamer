@@ -6,17 +6,17 @@ function request_form_module(){
 
 // ***** insert a new request record into a database table.
 request_form_module.prototype.create_request = function(db, name, room_id, email, phone, sp_chart, 
-                                                        supervisor_name, service_type, work_request, model, id){
+                                                        supervisor_name, service_type, work_request, model, id, path){
 
     return new Promise((resolve, reject) => {
         //Insert data into table
         sql = `INSERT INTO requests(id, customer_name, office_num, email, phone_num, speed_chart, 
-            supervisor_name, service_type, request_description, manufacturer, status, open_time, close_time) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`
+            supervisor_name, service_type, request_description, manufacturer, status, open_time, close_time, file_path) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
         
         time = Date.now()
 
         db.run(sql, [id, name, room_id, email, phone, sp_chart, 
-            supervisor_name, service_type, work_request, model, 'open', time, 0], (err) => {
+            supervisor_name, service_type, work_request, model, 'open', time, 0, path], (err) => {
             if (err){
                 reject(err)
             } else {
