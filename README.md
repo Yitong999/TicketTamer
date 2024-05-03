@@ -75,7 +75,7 @@ To run the server in production mode, start it using:
 
 1. In invoice part, separate total costs to parts costs and labor costs, and total. 
 2. In general report part, separate total costs to parts costs and labor costs, and total. 
-3. There are three level of privilege (Manager, Supervisor, and Staff). Supervisors can only see the closed tickets in his own shops, but manager can see all closed tickets. Also, supervisor can sign up for a staff, and manager can sign up for a manager, supervisor, and staff. Beyond it, IT department has the highest control. IT team can directly modify the database.
+3. There are three level of privilege for staff (Manager, Supervisor, and Staff). Supervisors can only see the closed tickets in his own shops, but manager can see all closed tickets. Also, supervisor can sign up for a staff, and manager can sign up for a manager, supervisor, and staff. Beyond it, IT department has the highest control. IT team can directly modify the database.
 
 ## Tickets System API Documentation
 
@@ -98,8 +98,8 @@ To run the server in production mode, start it using:
 ```
 
 
-### POST: Submit Form
-**URL:** `http://localhost:3000/form/submit`
+### POST: Login Form
+**URL:** `http://localhost:3000/login`
 
 **Sample Body:**
 ```json
@@ -110,7 +110,7 @@ To run the server in production mode, start it using:
 ```
 
 ### GET: Logout
-**URL:** `http://localhost:3000//logout`
+**URL:** `http://localhost:3000/logout`
 
 
 ### GET: Check If Generated Ticket ID Existing in Database Already
